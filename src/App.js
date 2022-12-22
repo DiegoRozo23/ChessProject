@@ -1,10 +1,10 @@
-import React from 'react';
-import LegalMoves from './LegalMoves';
+import React, { useEffect, useState } from "react";
+import FENRecorder from "./components/js/FENRecorder";
 
 function App() {
   return (
     <div>
-      <LegalMoves/>
+      <FENRecorder />
     </div>
   );
 }
