@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
-import "./GameBoard.css";
+import "./css/GameBoard.css";
 
 export default function GameBoard() {
   const [game, setGame] = useState(new Chess());
