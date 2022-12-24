@@ -4,8 +4,22 @@ import { Chessboard } from "react-chessboard";
 import "./style.css";
 
 export default function LegalMoves() {
+  const [nameOpenings, setNameOpenings] = useState([]);
 
-
+  useEffect(() => {
+    async function fetchOpenings() {
+      try {
+        const response = await fetch(
+          "https://chessbackend.cristiancubillo.repl.co/api/openings/all"
+        );
+        setNameOpenings(await response.json());
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchOpenings();
+  }, []);
+  
 
   const [game, setGame] = useState(new Chess());
   const [moveSuccessful, setMoveSuccessful] = useState(false);
@@ -15,21 +29,50 @@ export default function LegalMoves() {
   const [darkSquareColor, setDarkSquareColor] = useState('#6c809a');
   const [ligthSquareColor, setLigthSquareColor] = useState('#edeed1');
   const [selectedOpening, setSelectedOpening] = useState("");
-  const openings = {
-    "italian": ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "Nc3", "Bc5", "d3", "Qe7"]
-  };
+    const [opening, setOpening] = useState([]);
+
+
   const [playingOpening, setPlayingOpening] = useState(false)
   const [movesPlayedOpening, setMovesPlayedOpening] = useState(0);
 
   const [increment, setIncrement] = useState(1)
 
-  function handleChange(event) {
+  async function handleChange(event) {
     console.log("seleccion")
     setSelectedOpening(event.target.value);
     setPlayingOpening(true)
+    const response = await fetch(`https://chessbackend.cristiancubillo.repl.co/api/openings/${event.target.value}`
+    , {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+  // Parse the response from the server into a JavaScript object
+  const data = await response.json();
+
+  // Set the opening state with the data from the API
+  setOpening(data);
+  console.log(data)
   }
 
-  function changeDarkSquareColor(color) {
+  async function changeDarkSquareColor(color) {
+    const response = await fetch(`https://chessbackend.cristiancubillo.repl.co/api/openings/all`
+    , {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+  // Parse the response from the server into a JavaScript object
+  const data = await response.json();
+
+  // Set the opening state with the data from the API
+  console.log(data[0]["name"])
     setDarkSquareColor(color);
   }
   
@@ -112,18 +155,19 @@ export default function LegalMoves() {
     setMoveSuccessful(true);
   }
 
+
   function openingPractice(){
     //si se sesta jugando la apertura y se jugó el movimiento correcto: 
-    if(game.history()[movesPlayedOpening+increment-1] === openings[selectedOpening][movesPlayedOpening+increment-1]){
+    if(game.history()[movesPlayedOpening+increment-1] === opening[movesPlayedOpening+increment-1]){
       setIncrement(increment+1)
       setMovesPlayedOpening(movesPlayedOpening+1)
-      game.move(openings[selectedOpening][movesPlayedOpening+increment]);
+      game.move(opening[movesPlayedOpening+increment]);
       setGame(game);
       setMoveSuccessful(true)
     }
     //reinicie el contador si no
     else{
-      setIncrement(1)
+      handleUndoClick()
     }
   }
 
@@ -171,11 +215,9 @@ export default function LegalMoves() {
         Select opening:
         <select value={selectedOpening} onChange={handleChange}>
         <option value=""></option>
-          <option value="italian">Italian</option>
-          <option value="sicilian">Sicilian</option>
-          <option value="french">French</option>
-          <option value="english">English</option>
-          <option value="spanish">Spanish</option>
+            {nameOpenings.map((opening) => (
+            <option value={opening.name}>{opening.name}</option>
+            ))}
         </select>
       </label>
     </div>
