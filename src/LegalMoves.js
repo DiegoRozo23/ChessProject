@@ -58,21 +58,8 @@ export default function LegalMoves() {
   console.log(data)
   }
 
-  async function changeDarkSquareColor(color) {
-    const response = await fetch(`https://chessbackend.cristiancubillo.repl.co/api/openings/all`
-    , {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  function changeDarkSquareColor(color) {
 
-  // Parse the response from the server into a JavaScript object
-  const data = await response.json();
-
-  // Set the opening state with the data from the API
-  console.log(data[0]["name"])
     setDarkSquareColor(color);
   }
   
